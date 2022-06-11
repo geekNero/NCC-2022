@@ -1,43 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
-
-# class User(AbstractUser):
-#     junior = models.BooleanField(null=True)
-#     total_score=models.IntegerField(null=True,default=0)
-#     def __str__(self):
-#         return self.user.username
-
-class UserAccountManager(BaseUserManager):
-    def create_user(self, email, name, password=None):
-        if not email:
-            raise ValueError("User Must have an email address")
-        
-        email = self.normalize_email(email)
-        user = self.model(email=email, name=name)
-
-        user.set_password(password) # hashed password.
-
-        user.save()
-
-        return user
-
-class UserAccount(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, unique=True)
+class Player(AbstractUser):
     junior = models.BooleanField(null=True)
     total_score=models.IntegerField(null=True,default=0)
 
-    objects = UserAccountManager()
-
-    USERNAME_FIELD = 'name'    # login using email 
-    REQUIRED_FIELDS = ['name'] # email already included 
-
-    
     def __str__(self):
-        return self.name
-
+        return self.username
 
 class Question(models.Model):
     title=models.CharField(max_length=1003, null=True)
@@ -62,7 +30,7 @@ class Question(models.Model):
 
 class Submission(models.Model):
     q_id = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
-    p_id = models.ForeignKey(UserAccount, null=True, on_delete=models.CASCADE)
+    p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
     score = models.IntegerField(null=True)
     time = models.DateTimeField(auto_now_add=True, blank=True)
     code = models.TextField(null=True)  # text field
@@ -94,11 +62,11 @@ class testcase(models.Model):
 class SetTime(models.Model):
     start_time = models.DateTimeField(auto_now_add=False)
     final_time = models.DateTimeField(auto_now_add=False)
-    
+
 
 class Question_Status(models.Model):
     q_id = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
-    p_id = models.ForeignKey(UserAccount, null=True, on_delete=models.CASCADE)
+    p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
     score= models.IntegerField(null=True,default=0)
     status = models.CharField(
         max_length=10,
@@ -114,10 +82,3 @@ class Question_Status(models.Model):
 
 
 
-"""
-
-
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
-"""

@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from django.shortcuts import render
 from rest_framework import generics
-from .models import UserAccount,Question, Question_Status
-from .serializers import UserSerializer, Question_StatusSerializer, QuestionSerilaizer
+from .models import Player,Question, Question_Status
+from .serializers import *
 from rest_framework.decorators import api_view
 from django.db.models import Q
 signals = {
@@ -25,7 +25,7 @@ signals = {
 
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
-#     User=UserAccount.objects.get(user=request.user.id)
+#     User=Player.objects.get(user=request.user.id)
 #     ques = Question.objects.filter(Q(junior=User.junior) | Q(junior=None))    
 #     status_list=[]
 #     for i in ques:
@@ -36,3 +36,12 @@ signals = {
 
 
 
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class Logout(APIView):
+    def get(self, request, format=None):
+        # simply delete the token to force a login
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)

@@ -3,9 +3,9 @@ from django.db import models
 from .models import *
 
 # Register your models here.
-# @admin.register(User)
-# class UserrAdmin(admin.ModelAdmin):
-#     list_display = ["junior","username", "total_score"]
+@admin.register(Player)
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = ["junior","username", "total_score"]
 
 
 @admin.register(Question)

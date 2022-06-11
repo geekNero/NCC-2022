@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
 
 ]
@@ -84,11 +85,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication', 
+        'rest_framework.authentication.TokenAuthentication',
     ),
 }
 
@@ -133,36 +132,29 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'core.UserAccount'
+AUTH_USER_MODEL = 'core.Player'
 
-SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
-}
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_FIELD = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT= 587
-EMAIL_HOST_USER= 'ncc.pisb@gmail.com'
-EMAIL_HOST_PASSWORD='jhptlzghrdnypdlc' 
 EMAIL_USE_TLS = True
 
-DJOSER = {
-    'LOGIN_FIELD' : 'username',
-    'USER_CREATE_PASSWORD_RETYPE' : True,
-    'USERNAME_CHANGED_EMAIL_CONFIRMATION' : True,
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION' : True,
-    'SEND_CONFIRMARION_EMAIL':True,
-    'SET_PASSWORD_RETYPE' : True,
-    'PASSWORD_RESET_CONFIRM_URL' : 'password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL' : 'email/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL' : 'activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL' : True,
-    'SERIALIZERS' :{
-        'user_create' : 'core.serializers.UserCreateSerializer',
-        'user' : 'core.serializers.UserCreateSerializer',
-        'user_delete' : 'djoser.serializers.UserDeleteSerializer',
+EMAIL_HOST = 'smtp.gmail.com'
 
-    }   
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER= 'ncc.pisb@gmail.com'
+
+EMAIL_HOST_PASSWORD='jhptlzghrdnypdlc' 
+
+
+DJOSER = {
+    'SEND_CONFIRMATION_EMAIL': True,
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'SERIALIZERS':{
+        'user_create': 'core.serializers.PlayerSerializer',
+        'user': 'core.serializers.PlayerSerializer',
+    },
 }
 
 SITE_NAME = 'Website'
