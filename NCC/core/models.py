@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-class Player(AbstractUser):
-    junior = models.BooleanField(null=True)
-    total_score=models.IntegerField(null=True,default=0)
+from django.db.models.signals import post_save
+from django.dispatch import receiver # this decorator.
+from django.conf import settings
+import os
 
+class Player(AbstractUser):
+    total_score=models.IntegerField(null=True,default=0)
     def __str__(self):
         return self.username
 
@@ -20,7 +23,6 @@ class Question(models.Model):
     correct_submissions = models.IntegerField(null=True)
     total_submissions = models.IntegerField(null=True)
     accuracy = models.FloatField(null=True)
-    junior = models.BooleanField(null=True)
     time_limt=models.IntegerField(null=True,default=1)
     memory_limit = models.IntegerField(null=True,default=100000000)
     # questions score for junior senior.
@@ -35,7 +37,7 @@ class Submission(models.Model):
     time = models.DateTimeField(auto_now_add=True, blank=True)
     code = models.TextField(null=True)  # text field
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         null=True,
         choices=(
             ("WA", "Wrong Answer"),
@@ -69,7 +71,7 @@ class Question_Status(models.Model):
     p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
     score= models.IntegerField(null=True,default=0)
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         null=True,
         choices=(
             ('NA',"Not Attempted"),
@@ -79,6 +81,5 @@ class Question_Status(models.Model):
             ("CTE", "Compile Time Error"),
             ("RE", "Runtime Error"),
             ("MLE", "Memory Limit Exceeded")),default="Not Attempted")
-
 
 

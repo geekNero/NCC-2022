@@ -5,7 +5,7 @@ from .models import *
 # Register your models here.
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ["junior","username", "total_score"]
+    list_display = ["username", "total_score"]
 
 
 @admin.register(Question)
@@ -15,7 +15,6 @@ class QuestionAdmin(admin.ModelAdmin):
         "body",
         "correct_submissions",
         "total_submissions",
-        "junior",
     ]
 
 
