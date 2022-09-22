@@ -7,24 +7,7 @@ from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from .permission import TimePermit
 from django.shortcuts import render, get_object_or_404
-signals = {
-    1: "CTE",
-    2: "CTE",
-    127: "CTE",
-    132: "RE",
-    133: "RE",
-    134: "RE",
-    136: "RE",
-    137: "TLE",
-    138: "MLE",
-    139: "RE",
-    158: "TLE",
-    152: "TLE",
-    159: "MLE",
-    153: "MLE",
-}
-from .time import *
-
+from .functionality import run_code,run_updates
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
 #     User=Player.objects.get(user=request.user.id)
@@ -48,7 +31,17 @@ class AllQuestion(viewsets.ModelViewSet):
     #     serializer = self.get_serializer(question)
     #     return Response(serializer.data)
     # print(time_left())
-
+class Submissions(viewsets.ModelViewSet):
+    permission_classes=(IsAuthenticated,TimePermit)
+    queryset=Submission.objects.all()
+    serializer_class=SubmissionSerializer
+    def get_queryset(self):
+        return self.queryset.filter(p_id=Player.objects.get(id=self.request.user.id))
+    def retrieve(self, request, pk=None):
+        submission=get_object_or_404(self.get_queryset(request),q_id=Question.objects.get(id=pk))
+        serializer= self.get_serializer(submission)
+        return Response(serializer.data)
+        
 class AllQuestionStatus(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     queryset=Question_Status.objects.all()
@@ -94,3 +87,13 @@ class Leaderboard(viewsets.ModelViewSet):
             lst.append(i.total_score)
             ret.append(lst)
         return Response(ret)
+class Submit(viewsets.ModelViewSet):
+    permission_classes=(IsAuthenticated,TimePermit)
+    def submission(self,request,pk):
+        if(request.method=="POST"):
+            code=request.POST["code"]
+            language=request.POST["language"]
+            test_ops,error=run_code(code,language,pk)
+            test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
+            return Response({"cases":test_ops,"error":error})
+        return Response(["Failed"])

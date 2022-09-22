@@ -7,10 +7,10 @@ from .models import *
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ["username", "total_score"]
 
-
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = [
+        "score",
         "title",
         "body",
         "correct_submissions",
@@ -20,7 +20,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ["p_id", "q_id", "score", "time", "code", "language", "status"]
+    list_display = ["p_id", "q_id", "time", "code", "language", "status"]
 
 
 @admin.register(testcase)
@@ -34,4 +34,8 @@ class SetTimeAdmin(admin.ModelAdmin):
 
 @admin.register(Question_Status)
 class Question_StatusAdmin(admin.ModelAdmin):
-    list_display = ['q_id', 'p_id', 'score', 'status']
+    list_display = ['q_id', 'p_id','penalty', 'score', 'status']
+
+@admin.register(Container)
+class Container_Statusadmin(admin.ModelAdmin):
+    list_display = ['name','cid','status']

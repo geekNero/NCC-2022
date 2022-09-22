@@ -10,4 +10,7 @@ urlpatterns = [
     path('user',views.UserDetails.as_view(actions={'get':'fetch'}),name='UserDetails'),
     path('rank',views.Leaderboard.as_view(actions={'get':'userRank'}),name='UserRank'),
     path('allranks',views.Leaderboard.as_view(actions={'get':'allRanks'}),name='AllRanks'),
+    path('submission', views.Submissions.as_view(actions={'get': 'list'}), name = 'submissions'),
+    path('submission/<int:pk>', views.Submissions.as_view(actions={'get': 'retrieve'}), name = 'retrieve-submission'),
+    path('submit/<int:pk>',views.Submit.as_view(actions={'post':'submission'}),name='submit')
 ]

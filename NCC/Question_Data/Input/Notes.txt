@@ -1,0 +1,27 @@
+ Docker:
+- Trying to open a container terminal using subprocess - did not work, simply opens the terminal in your current terminal, and does not run the next command.
+
+- Implementing Semaphore on docker containers to manage them - Did not try, as either gunicorn or nginx handle multiple requests themselves, no need to work on multithreading or semaphore.
+
+- Starting with DP - Completed an introduction from hackerearth.
+
+- Task 2 - - Created a basic function that generates excel sheet from a dictionary
+
+*  Download a tool visualize database * - Downloaded PgAdmin, but did not work with databases
+
+- Confirm if encryption is required : Dosen't seem like encryption really mattered,
+
+- Learning the send_email function pre-written in canopy_api.services : Send_email can be implemented later on, no specific requirements as of now.
+
+- Learning to implement access control : In this case acceess control is not required as the function is manually run
+
+- Contest at 8:05 div3 cf : Didn't go well, solved the questions way too late and most probably will get a negative delta
+
+- Wrote the base function and pseudocode to generate excel, completing the function today.
+
+- Just completed the whole function and generated a proper excel sheet.
+
+- Task 2 completed, failed to raise a PR for unknown reasons, email as well as async task was done by mentor.
+
+- Solved Ehab the xorist
+

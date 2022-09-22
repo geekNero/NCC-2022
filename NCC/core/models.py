@@ -1,3 +1,5 @@
+from operator import mod
+from statistics import mode
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
@@ -11,6 +13,7 @@ class Player(AbstractUser):
         return self.username
 
 class Question(models.Model):
+    score=models.IntegerField(null=True,default=1)
     title=models.CharField(max_length=1003, null=True)
     body = models.TextField(null=True)
     description= models.CharField(max_length=1003, null=True)
@@ -33,7 +36,6 @@ class Question(models.Model):
 class Submission(models.Model):
     q_id = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
     p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
-    score = models.IntegerField(null=True)
     time = models.DateTimeField(auto_now_add=True, blank=True)
     code = models.TextField(null=True)  # text field
     status = models.CharField(
@@ -49,7 +51,7 @@ class Submission(models.Model):
         ),
     )  # four type of submission status(WA, PASS, TLE, CTE)
     language = models.CharField(
-        max_length=10, null=True, choices=(("c", "C"), ("cpp", "C++"), ("py", "Python"))
+        max_length=10, null=True, choices=(("c", "C"), ("c++", "C++"), ("python", "Python"))
     )
 def get_question_path(state):
     return "Question_Data/{0}".format(state)
@@ -69,6 +71,7 @@ class SetTime(models.Model):
 class Question_Status(models.Model):
     q_id = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
     p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
+    penalty=models.IntegerField(null=True,default=0)
     score= models.IntegerField(null=True,default=0)
     status = models.CharField(
         max_length=20,
@@ -82,4 +85,8 @@ class Question_Status(models.Model):
             ("RE", "Runtime Error"),
             ("MLE", "Memory Limit Exceeded")),default="Not Attempted")
 
-
+class Container(models.Model):
+    name=models.CharField(max_length=1003, null=True)
+    cid=models.CharField(max_length=1003, null=True)
+    active=models.BooleanField(null=True,default=False)
+    status =models.BooleanField(null=True,default=False)
