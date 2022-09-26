@@ -1,4 +1,1 @@
-int main() 
-{ 
-    return 0; 
-} 
+print(int(input())+20)

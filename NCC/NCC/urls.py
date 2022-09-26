@@ -24,4 +24,4 @@ urlpatterns = [
     path('NCC/',include('core.urls')),
 ]
 create_container()
-# run_container()
+run_container()

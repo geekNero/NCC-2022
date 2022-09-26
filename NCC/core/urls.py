@@ -12,5 +12,6 @@ urlpatterns = [
     path('allranks',views.Leaderboard.as_view(actions={'get':'allRanks'}),name='AllRanks'),
     path('submission', views.Submissions.as_view(actions={'get': 'list'}), name = 'submissions'),
     path('submission/<int:pk>', views.Submissions.as_view(actions={'get': 'retrieve'}), name = 'retrieve-submission'),
-    path('submit/<int:pk>',views.Submit.as_view(actions={'post':'submission'}),name='submit')
+    path('submit/<int:pk>',views.Submit.as_view(actions={'post':'submission'}),name='submit'),
+    path('custom',views.Submit.as_view(actions={'post':'customSubmission'}),name='custom')
 ]

@@ -1,7 +1,6 @@
 import subprocess 
 import time
 import shutil
-from unittest import TestCase, result
 from .models import *
 signals = {
     1: "CTE",
@@ -19,16 +18,17 @@ signals = {
     159: "MLE",
     153: "MLE",
 }
-def run_code(code,language,qid):
+def find_container():
     container=0
     while(len(list(Container.objects.filter(status=False)))==0):
         time.sleep(5)
     container=list(Container.objects.filter(status=False))[0]
     container.status=True
     container.save()
-    origin="sub.py"
+    return container
+
+def swap_code(container,code,language):
     dest=f"containers/{container.name}/sub.py"
-    shutil.copyfile(origin,dest)
     path=""
     with open(dest,'a') as sub:
         if(language=="python"):
@@ -43,22 +43,64 @@ def run_code(code,language,qid):
     dest=f"containers/{container.name}/{path}"
     with open(dest,'w+') as op:
         op.write(code)
+
+def get_sub(container):
+    origin="sub.py"
+    dest=f"containers/{container.name}/sub.py"
+    shutil.copyfile(origin,dest)
+
+def swap_input(container,path,input):
+    inp=f'containers/{container.name}/input.txt'
+    if(path):
+        shutil.copyfile(input,inp)
+    else:
+        with open(inp,"w+") as i:
+            i.write(input)
+
+def swap_output(container,path,output):
+    samp_op=f'containers/{container.name}/sam_output.txt'
+    if(path):
+        shutil.copyfile(output,samp_op)
+    else:
+        with open(samp_op,"w+") as o:
+            o.write(output)
+
+def returnContainer(container):
+    container.status=False
+    container.save()
+
+def get_returnCode(container):
+    returnCode=0
+    with open(f'containers/{container.name}/return_code.txt','r') as ret:
+        returnCode=ret.read()
+    returnCode=returnCode.strip()
+    returnCode=int(returnCode)
+    return returnCode
+
+def get_Error(container):
+    error=""
+    with open(f'containers/{container.name}/error.txt','r') as err:
+        error=err.read()
+    return error
+
+def get_Output(container):
+    op=""
+    with open(f"containers/{container.name}/output.txt") as file_1:
+        op=file_1.read()    
+    return op
+
+def run_code(code,language,qid):
+    container=find_container()
+    get_sub(container)
+    swap_code(container,code,language)
     test_ops=[]
     for test in testcase.objects.filter(q_id=qid):
-        inp=f'containers/{container.name}/input.txt'
-        samp_op=f'containers/{container.name}/sam_output.txt'
-        shutil.copyfile(test.tc_input.path,inp)
-        shutil.copyfile(test.tc_output.path,samp_op)
+        swap_input(container,True,test.tc_input.path)
+        swap_output(container,True,test.tc_output.path)
         execute(container)
-        returnCode=0
-        error=""
+        returnCode=get_returnCode(container)
+        error=get_Error(container)
         test_ops=[]
-        with open(f'containers/{container.name}/return_code.txt','r') as ret:
-            returnCode=ret.read()
-        with open(f'containers/{container.name}/error.txt','r') as err:
-            error=err.read()
-        returnCode=returnCode.strip()
-        returnCode=int(returnCode)
         print("Return COde : ",returnCode)
         if(returnCode!=0):
             try:
@@ -75,18 +117,21 @@ def run_code(code,language,qid):
                 test_ops.append('Passed')
             else:
                 test_ops.append('WA')
-    container.status=False
-    container.save()
+    returnContainer()
     return test_ops,error
+
+
 def execute(container):
     command=f"sudo docker exec {container.cid} python3 src/sub.py"
     a=subprocess.run(command,shell=True,text=True)
+
 def run_container():
     command= "sudo docker restart "
     for c in Container.objects.all():
         cid=0
         a=subprocess.run(command+c.cid,capture_output=True,shell=True,text=True)
         c.save()
+
 def create_container():
     if(len(Container.objects.all())==0):
         subprocess.run('bash create.sh',shell=True,text=True)
@@ -95,6 +140,8 @@ def create_container():
             for i in range(1,len(lines),2):
                 obj=Container(name=(lines[i-1]).strip(),cid=(lines[i]).strip(),status=False)
                 obj.save()
+
+
 def comapare(container):
     with open(f"containers/{container.name}/output.txt") as file_1:
         file_1_text = file_1.readlines()
@@ -120,6 +167,7 @@ def comapare(container):
             if len(line) > 0:
                 result = False
     return result
+
 def run_updates(pk,test_ops,error,user,code,language):
     status="NA"
     qscore=Question.objects.get(pk=pk)
@@ -149,3 +197,14 @@ def run_updates(pk,test_ops,error,user,code,language):
     sub.save()
     user.save()
     return test_ops,error
+
+def custom(code,language,input):
+    container=find_container()
+    get_sub(container)
+    swap_code(container,code,language)
+    swap_input(container,False,input)
+    execute(container)
+    output=get_Output(container)
+    error=get_Error(container)
+    returnContainer()
+    return output,error
