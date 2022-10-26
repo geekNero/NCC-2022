@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db import models
 from .models import *
 
 # Register your models here.
@@ -38,4 +37,4 @@ class Question_StatusAdmin(admin.ModelAdmin):
 
 @admin.register(Container)
 class Container_Statusadmin(admin.ModelAdmin):
-    list_display = ['name','cid','status']
+    list_display = ['name','status']

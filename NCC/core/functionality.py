@@ -27,19 +27,19 @@ def find_container():
     container.save()
     return container
 
-def swap_code(container,code,language):
+def swap_code(container,code,language,time_limit,memory_limit):
     dest=f"containers/{container.name}/sub.py"
     path=""
     with open(dest,'a') as sub:
         if(language=="python"):
             path="code.py"
-            sub.write('py()')
+            sub.write(f'py({time_limit},{memory_limit})')
         elif(language=="c++"):
             path="code.cpp"
-            sub.write('cpp()')
+            sub.write(f'cpp({time_limit},{memory_limit})')
         else:
             path="code.c"
-            sub.write('c()')
+            sub.write(f'c({time_limit},{memory_limit})')
     dest=f"containers/{container.name}/{path}"
     with open(dest,'w+') as op:
         op.write(code)
@@ -92,8 +92,9 @@ def get_Output(container):
 def run_code(code,language,qid):
     container=find_container()
     get_sub(container)
-    swap_code(container,code,language)
+    swap_code(container,code,language,qid.ttime_limt,qid.memory_limit)
     test_ops=[]
+    error=0
     for test in testcase.objects.filter(q_id=qid):
         swap_input(container,True,test.tc_input.path)
         swap_output(container,True,test.tc_output.path)
@@ -117,31 +118,21 @@ def run_code(code,language,qid):
                 test_ops.append('Passed')
             else:
                 test_ops.append('WA')
-    returnContainer()
+    returnContainer(container)
     return test_ops,error
 
 
 def execute(container):
-    command=f"sudo docker exec {container.cid} python3 src/sub.py"
+    command=f"sudo docker exec {container.name} python3 src/sub.py"
     a=subprocess.run(command,shell=True,text=True)
 
 def run_container():
-    command= "sudo docker restart "
-    for c in Container.objects.all():
-        cid=0
-        a=subprocess.run(command+c.cid,capture_output=True,shell=True,text=True)
-        c.save()
+    subprocess.run('bash docker_scripts/run.sh',shell=True)
 
 def create_container():
-    if(len(Container.objects.all())==0):
-        subprocess.run('bash create.sh',shell=True,text=True)
-        with open('containers/container.txt','r') as lst:
-            lines=lst.readlines()
-            for i in range(1,len(lines),2):
-                obj=Container(name=(lines[i-1]).strip(),cid=(lines[i]).strip(),status=False)
-                obj.save()
-
-
+    subprocess.run('bash docker_scripts/create.sh',shell=True,text=True)
+    for i in range(1,11):
+        Container.objects.get_or_create(name=f"NCC-Container-{i}",status=False)
 def comapare(container):
     with open(f"containers/{container.name}/output.txt") as file_1:
         file_1_text = file_1.readlines()
@@ -201,10 +192,12 @@ def run_updates(pk,test_ops,error,user,code,language):
 def custom(code,language,input):
     container=find_container()
     get_sub(container)
-    swap_code(container,code,language)
+    swap_code(container,code,language,1,256)
     swap_input(container,False,input)
     execute(container)
     output=get_Output(container)
     error=get_Error(container)
-    returnContainer()
+    if(len(error)):
+        output=""
+    returnContainer(container)
     return output,error

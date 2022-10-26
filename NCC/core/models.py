@@ -27,7 +27,7 @@ class Question(models.Model):
     total_submissions = models.IntegerField(null=True)
     accuracy = models.FloatField(null=True)
     time_limt=models.IntegerField(null=True,default=1)
-    memory_limit = models.IntegerField(null=True,default=100000000)
+    memory_limit = models.IntegerField(null=True,default=256)
     # questions score for junior senior.
     def __str__(self):
         return self.title
@@ -87,6 +87,5 @@ class Question_Status(models.Model):
 
 class Container(models.Model):
     name=models.CharField(max_length=1003, null=True)
-    cid=models.CharField(max_length=1003, null=True)
     active=models.BooleanField(null=True,default=False)
     status =models.BooleanField(null=True,default=False)

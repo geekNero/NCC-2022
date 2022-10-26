@@ -7,7 +7,7 @@ from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from .permission import TimePermit
 from django.shortcuts import render, get_object_or_404
-from .functionality import custom, run_code,run_updates,custom
+from .functionality import custom,run_code,run_updates
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
 #     User=Player.objects.get(user=request.user.id)
@@ -58,51 +58,64 @@ class UserDetails(viewsets.ModelViewSet):
     queryset=Player.objects.all()
     serializer_class=PlayerSerializer
     def fetch(self,request):
-        player=get_object_or_404(self.queryset,id=request.user.id)
-        serializer= self.get_serializer(player)
-        return Response(serializer.data)
+        try:
+            player=get_object_or_404(self.queryset,id=request.user.id)
+            serializer= self.get_serializer(player)
+            return Response(serializer.data)
+        except:
+            return Response(["Failed"])
 
 class Leaderboard(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     queryset=Player.objects.all().order_by("-total_score")    
     def userRank(self,request):
-        myrank=-1
-        rank=1
-        for i in self.queryset:
-            if(i.id==request.user.id):
-                myrank=rank
-                break
-            rank+=1
-        return Response([rank])
-
-    def allRanks(self,request):
-        ret=[]
-        for i in self.queryset:
-            lst=[i.username]
-            each_score=[]
-            for j in Question.objects.all():
-                status,created=Question_Status.objects.get_or_create(p_id=i,q_id=j)
-                each_score.append(status.score)
-            lst.append(each_score)
-            lst.append(i.total_score)
-            ret.append(lst)
-        return Response(ret)
+        try:
+            myrank=-1
+            rank=1
+            for i in self.queryset:
+                if(i.id==request.user.id):
+                    myrank=rank
+                    break
+                rank+=1
+            return Response([rank])
+        except:
+            return Response(["Failed"])
+    def allRanks(self):
+        try:
+            ret=[]
+            for i in self.queryset:
+                lst=[i.username]
+                each_score=[]
+                for j in Question.objects.all():
+                    status,created=Question_Status.objects.get_or_create(p_id=i,q_id=j)
+                    each_score.append(status.score)
+                lst.append(each_score)
+                lst.append(i.total_score)
+                ret.append(lst)
+            return Response(ret)
+        except:
+            return Response(["Failed"])
         
 class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
         if(request.method=="POST"):
-            code=request.POST["code"]
-            language=request.POST["language"]
-            test_ops,error=run_code(code,language,pk)
-            test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
-            return Response({"cases":test_ops,"error":error})
+            try:
+                code=request.POST["code"]
+                language=request.POST["language"]
+                test_ops,error=run_code(code,language,pk)
+                test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
+                return Response({"cases":test_ops,"error":error})
+            except:
+                return Response(["Failed"])
         return Response(["Failed"])
     def customSubmission(self,request):
-        if(request.method=="POST"):
-            code=request.POST["code"]
-            inp=request.POST["input"]
-            language=request.POST["language"]
-            output,error=custom(code,language,input)
-            return Response({"output":output,"error":error})
-        return Response(["Failed"])
+        try:
+            if(request.method=="POST"):
+                code=request.POST["code"]
+                inp=request.POST["input"]
+                language=request.POST["language"]
+                output,error=custom(code,language,inp)
+                return Response({"output":output,"error":error})
+        except:
+            return Response(["Failed"])
