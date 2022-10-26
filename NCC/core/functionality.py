@@ -91,8 +91,9 @@ def get_Output(container):
 
 def run_code(code,language,qid):
     container=find_container()
+    qid=Question.objects.get(pk=qid)
     get_sub(container)
-    swap_code(container,code,language,qid.ttime_limt,qid.memory_limit)
+    swap_code(container,code,language,qid.time_limt,qid.memory_limit)
     test_ops=[]
     error=0
     for test in testcase.objects.filter(q_id=qid):
