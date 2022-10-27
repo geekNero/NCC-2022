@@ -70,28 +70,28 @@ class Leaderboard(viewsets.ModelViewSet):
     queryset=Player.objects.all().order_by("-total_score")    
     def userRank(self,request):
         try:
-            myrank=-1
+            myrank={}
             rank=1
-            for i in self.queryset:
-                if(i.id==request.user.id):
-                    myrank=rank
+            for player in self.queryset:
+                if(player.id==request.user.id):
+                    myrank["rank"]=rank
+                    for que in Question.objects.all():
+                        status,created=Question_Status.objects.get_or_create(p_id=player,q_id=que)
+                        myrank[status.q_id.pk]=status.status
                     break
                 rank+=1
-            return Response([rank])
+            return Response(myrank)
         except:
             return Response(["Failed"])
-    def allRanks(self):
+    def allRanks(self,request):
         try:
-            ret=[]
-            for i in self.queryset:
-                lst=[i.username]
-                each_score=[]
-                for j in Question.objects.all():
-                    status,created=Question_Status.objects.get_or_create(p_id=i,q_id=j)
-                    each_score.append(status.score)
-                lst.append(each_score)
-                lst.append(i.total_score)
-                ret.append(lst)
+            ret={}
+            for player in self.queryset:
+                ret[player.username]={}
+                ret[player.username]['total_score']=player.total_score
+                for que in Question.objects.all():
+                    status,created=Question_Status.objects.get_or_create(p_id=player,q_id=que)
+                    ret[player.username][status.q_id.id]=status.score
             return Response(ret)
         except:
             return Response(["Failed"])
@@ -100,13 +100,13 @@ class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
         if(request.method=="POST"):
-            try:
+            # try:
                 code=request.POST["code"]
                 language=request.POST["language"]
                 test_ops,error=run_code(code,language,pk)
                 test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
                 return Response({"cases":test_ops,"error":error})
-            except:
+            # except:
                 return Response(["Failed"])
         return Response(["Failed"])
     def customSubmission(self,request):
