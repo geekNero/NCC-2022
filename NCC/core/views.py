@@ -1,13 +1,13 @@
-from rest_framework import mixins
-from django.shortcuts import render
 from .models import *
 from .serializers import *
+from .time import current_time
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import generics, viewsets
+from rest_framework import viewsets
 from rest_framework.response import Response
 from .permission import TimePermit
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from .functionality import custom,run_code,run_updates
+from rest_framework.decorators import api_view
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
 #     User=Player.objects.get(user=request.user.id)
@@ -100,13 +100,13 @@ class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
         if(request.method=="POST"):
-            # try:
+            try:
                 code=request.POST["code"]
                 language=request.POST["language"]
                 test_ops,error=run_code(code,language,pk)
                 test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
                 return Response({"cases":test_ops,"error":error})
-            # except:
+            except:
                 return Response(["Failed"])
         return Response(["Failed"])
     def customSubmission(self,request):
@@ -119,3 +119,8 @@ class Submit(viewsets.ModelViewSet):
                 return Response({"output":output,"error":error})
         except:
             return Response(["Failed"])
+
+#returns a dictionary containing hours, mins, and seconds of current time since start of the contest
+@api_view(['GET'])
+def Time(request):
+    return Response(current_time())
