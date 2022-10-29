@@ -173,8 +173,8 @@ def run_updates(pk,test_ops,error,user,code,language):
             data.penalty=0
             data.status="AC"
             qscore.score-=1
+            qscore.correct_submissions+=1
             data.save()
-            qscore.save()
     else:
         status=test_ops[-1]
         data,created=Question_Status.objects.get_or_create(q_id=qscore,p_id=user)
@@ -184,6 +184,8 @@ def run_updates(pk,test_ops,error,user,code,language):
         for i in range(len(test_ops),total):
             test_ops.append('Locked')
         data.save()
+    qscore.total_submissions+=1
+    qscore.save()
     print(status)
     sub=Submission(q_id=qscore,p_id=user,code=code,language=language,status=status)
     sub.save()

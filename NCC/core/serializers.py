@@ -24,12 +24,9 @@ class QuestionSerilaizer(serializers.ModelSerializer):
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
-    q_id = QuestionSerilaizer(read_only=True) # just to pass data along with json object.
-    p_id = PlayerSerializer(read_only=True)
     class Meta:
         model = Submission
         fields = "__all__"
-
 
 class TestcaseSerializer(serializers.ModelSerializer):
     q_id = QuestionSerilaizer(read_only=True) 
@@ -43,8 +40,8 @@ class SetTimeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class Question_StatusSerializer(serializers.ModelSerializer):
-    q_id = QuestionSerilaizer(read_only=True) # just to pass data along with json object.
-    p_id = PlayerSerializer(read_only=True)
+    # q_id = QuestionSerilaizer(read_only=True) # just to pass data along with json object.
+    # p_id = PlayerSerializer(read_only=True)
     class Meta:
         model = Question_Status
         fields = '__all__'

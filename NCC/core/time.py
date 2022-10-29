@@ -15,7 +15,7 @@ def time_left():
     object=SetTime.objects.get(pk=1)
     if(active()):
         h,m,s=time_difference(object.final_time,t)
-        return m+(60*h)
+        return {'hours':h, 'minutes':m, 'seconds':s}
     return 0
 def current_time():
     t=datetime.now().astimezone()

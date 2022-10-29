@@ -53,6 +53,8 @@ class Submission(models.Model):
     language = models.CharField(
         max_length=10, null=True, choices=(("c", "C"), ("c++", "C++"), ("python", "Python"))
     )
+    class Meta:
+        ordering = ['time']
 def get_question_path(state):
     return "Question_Data/{0}".format(state)
 
