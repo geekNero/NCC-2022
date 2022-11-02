@@ -8,8 +8,6 @@ from .permission import TimePermit
 from django.shortcuts import get_object_or_404
 from .functionality import custom,run_code,run_updates
 from rest_framework.decorators import api_view
-from .pagination import *
-from rest_framework.pagination import PageNumberPagination
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
 #     User=Player.objects.get(user=request.user.id)
@@ -37,17 +35,12 @@ class Submissions(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     queryset=Submission.objects.all()
     serializer_class=SubmissionSerializer
-    pagination_class=SubmissionPagination
-    page_size = 5
     def get_queryset(self):
         return self.queryset.filter(p_id=self.request.user)
     def retrieve(self, request, pk=None):
-        paginator = PageNumberPagination()
-        paginator.page_size = self.page_size
         submission=self.get_queryset().filter(q_id=Question.objects.get(id=pk))
-        result_page = paginator.paginate_queryset(submission, request)
-        serializer= self.get_serializer(result_page,many=True)
-        return paginator.get_paginated_response(serializer.data)
+        serializer= self.get_serializer(submission,many=True)
+        return Response(serializer.data)
         
         
 class AllQuestionStatus(viewsets.ModelViewSet):
@@ -76,8 +69,6 @@ class UserDetails(viewsets.ModelViewSet):
 class Leaderboard(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     queryset=Player.objects.all().order_by("-total_score")    
-    page_size = 10
-    paginator = PageNumberPagination()
     def userRank(self,request):
         try:
             myrank={}
@@ -95,19 +86,14 @@ class Leaderboard(viewsets.ModelViewSet):
             return Response(["Failed"])
     def allRanks(self,request):
         try:
-            paginator = PageNumberPagination()
-            paginator.page_size = self.page_size
             ret={}
-            rank=[]
             for player in self.queryset:
-                ret['name']={player.username}
-                ret['total_score']=player.total_score
+                ret[player.username]={}
+                ret[player.username]['total_score']=player.total_score
                 for que in Question.objects.all():
                     status,created=Question_Status.objects.get_or_create(p_id=player,q_id=que)
-                    ret[status.q_id.id]=status.score
-                rank.append(ret)
-            result_page = paginator.paginate_queryset(rank, request)
-            return paginator.get_paginated_response(result_page)
+                    ret[player.username][status.q_id.id]=status.score
+            return Response(ret)
         except:
             return Response(["Failed"])
         
