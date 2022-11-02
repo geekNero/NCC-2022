@@ -87,7 +87,7 @@ class Question_Status(models.Model):
             ("TLE", "Time Limit Exceeded"),
             ("CTE", "Compile Time Error"),
             ("RE", "Runtime Error"),
-            ("MLE", "Memory Limit Exceeded")),default="Not Attempted")
+            ("MLE", "Memory Limit Exceeded")),default="NA")
 
 class Container(models.Model):
     name=models.CharField(max_length=1003, null=True)

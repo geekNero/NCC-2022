@@ -42,12 +42,15 @@ class Submissions(viewsets.ModelViewSet):
         serializer= self.get_serializer(submission,many=True)
         return Response(serializer.data)
         
-        
 class AllQuestionStatus(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     queryset=Question_Status.objects.all()
     serializer_class=Question_StatusSerializer
+    def create_status(self):
+        for que in Question.objects.all():
+            Question_Status.objects.get_or_create(p_id=self.request.user,q_id=que)
     def get_queryset(self):
+        self.create_status()
         return self.queryset.filter(p_id=self.request.user)
     def retrieve(self, request, pk=None):
         questionStatus=get_object_or_404(self.get_queryset(),q_id=Question.objects.get(id=pk))
@@ -101,14 +104,14 @@ class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
         if(request.method=="POST"):
-            # try:
+            try:
                 code=request.POST["code"]
                 language=request.POST["language"]
                 submission_time=current_time()
                 test_ops,error=run_code(code,language,pk)
                 test_ops,error=run_updates(pk,test_ops,error,request.user,code,language,submission_time)
                 return Response({"cases":test_ops,"error":error})
-            # except:
+            except:
                 return Response(["Failed"])
     def customSubmission(self,request):
         try:

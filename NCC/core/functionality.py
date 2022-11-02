@@ -169,10 +169,13 @@ def run_updates(pk,test_ops,error,user,code,language,submission_time):
         status="AC"
         if(created or data.score==0):
             data.score=qscore.score-data.penalty
+            if(data.score<10):
+                data.score=10
             user.total_score+=data.score
             data.penalty=0
             data.status="AC"
-            qscore.score-=1
+            if(qscore.score>50):
+                qscore.score-=1
             qscore.correct_submissions+=1
             data.save()
     else:
