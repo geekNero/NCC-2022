@@ -1,6 +1,6 @@
 from .models import *
 from .serializers import *
-from .time import time_left,current_time
+from .time import current_time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -41,6 +41,13 @@ class Submissions(viewsets.ModelViewSet):
         submission=self.get_queryset().filter(q_id=Question.objects.get(id=pk))
         serializer= self.get_serializer(submission,many=True)
         return Response(serializer.data)
+    def buffer(self,request,pk=None):
+        try:
+            submission=self.get_queryset().filter(q_id=Question.objects.get(id=pk)).order_by("-time")
+            serializer= self.get_serializer(submission[0])
+            return Response(serializer.data)
+        except:
+            return Response(["Failed"])
         
 class AllQuestionStatus(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
@@ -127,4 +134,5 @@ class Submit(viewsets.ModelViewSet):
 #returns a dictionary containing hours, mins, and seconds of current time since start of the contest
 @api_view(['GET'])
 def Time(request):
-    return Response(time_left())
+    t=SetTime.objects.get(pk=1)
+    return Response({"start_time":t.start_time,"end_time":t.final_time})

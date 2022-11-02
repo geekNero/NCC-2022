@@ -15,4 +15,5 @@ urlpatterns = [
     path('submit/<int:pk>',views.Submit.as_view(actions={'post':'submission'}),name='submit'),
     path('custom',views.Submit.as_view(actions={'post':'customSubmission'}),name='custom'),
     path('time',views.Time,name='time'),
+    path('buffer/<int:pk>',views.Submissions.as_view(actions={'get':'buffer'}),name = 'buffer'),
 ]
