@@ -26,7 +26,7 @@ class QuestionSerilaizer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = "__all__"
+        fields = ["p_id", "q_id", "hours","mins", "code", "language", "status"]
 
 class TestcaseSerializer(serializers.ModelSerializer):
     q_id = QuestionSerilaizer(read_only=True) 

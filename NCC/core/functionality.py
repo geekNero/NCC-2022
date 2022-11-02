@@ -160,7 +160,7 @@ def comapare(container):
                 result = False
     return result
 
-def run_updates(pk,test_ops,error,user,code,language):
+def run_updates(pk,test_ops,error,user,code,language,submission_time):
     status="NA"
     qscore=Question.objects.get(pk=pk)
     total=len(testcase.objects.filter(q_id=qscore))
@@ -187,7 +187,7 @@ def run_updates(pk,test_ops,error,user,code,language):
     qscore.total_submissions+=1
     qscore.save()
     print(status)
-    sub=Submission(q_id=qscore,p_id=user,code=code,language=language,status=status)
+    sub=Submission(q_id=qscore,p_id=user,code=code,language=language,status=status,hours=submission_time['hours'],mins=submission_time['minutes'])
     sub.save()
     user.save()
     return test_ops,error

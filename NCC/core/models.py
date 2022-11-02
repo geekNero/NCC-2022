@@ -37,6 +37,8 @@ class Submission(models.Model):
     q_id = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
     p_id = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True, blank=True)
+    hours = models.IntegerField(null=True,default=0)
+    mins = models.IntegerField(null=True,default=0)
     code = models.TextField(null=True)  # text field
     status = models.CharField(
         max_length=20,

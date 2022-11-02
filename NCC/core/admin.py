@@ -19,7 +19,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ["p_id", "q_id", "time", "code", "language", "status"]
+    list_display = ["p_id", "q_id", "hours","mins", "code", "language", "status"]
 
 
 @admin.register(testcase)

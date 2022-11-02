@@ -1,6 +1,6 @@
 from .models import *
 from .serializers import *
-from .time import time_left
+from .time import time_left,current_time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -101,13 +101,14 @@ class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
         if(request.method=="POST"):
-            try:
+            # try:
                 code=request.POST["code"]
                 language=request.POST["language"]
+                submission_time=current_time()
                 test_ops,error=run_code(code,language,pk)
-                test_ops,error=run_updates(pk,test_ops,error,request.user,code,language)
+                test_ops,error=run_updates(pk,test_ops,error,request.user,code,language,submission_time)
                 return Response({"cases":test_ops,"error":error})
-            except:
+            # except:
                 return Response(["Failed"])
     def customSubmission(self,request):
         try:
