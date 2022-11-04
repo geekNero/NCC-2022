@@ -65,7 +65,7 @@ class AllQuestionStatus(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class UserDetails(viewsets.ModelViewSet):
-    permission_classes=(IsAuthenticated,TimePermit)
+    permission_classes=(IsAuthenticated)
     queryset=Player.objects.all()
     serializer_class=PlayerSerializer
     def fetch(self,request):
@@ -77,7 +77,7 @@ class UserDetails(viewsets.ModelViewSet):
             return Response(["Failed"])
 
 class Leaderboard(viewsets.ModelViewSet):
-    permission_classes=(IsAuthenticated,TimePermit)
+    permission_classes=(IsAuthenticated)
     queryset=Player.objects.all().order_by("-total_score")    
     def userRank(self,request):
         try:

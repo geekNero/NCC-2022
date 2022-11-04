@@ -2,6 +2,9 @@ import subprocess
 import time
 import shutil
 from .models import *
+from .rand_password import generate
+
+
 signals = {
     1: "CTE",
     2: "CTE",
@@ -119,6 +122,7 @@ def run_code(code,language,qid):
                 test_ops.append('Passed')
             else:
                 test_ops.append('WA')
+    empty_folder(container)
     returnContainer(container)
     return test_ops,error
 
@@ -195,6 +199,9 @@ def run_updates(pk,test_ops,error,user,code,language,submission_time):
     user.save()
     return test_ops,error
 
+def empty_folder(container):
+    subprocess.run(f'sudo rm containers/{container.name}/*',shell=True)
+
 def custom(code,language,input):
     container=find_container()
     get_sub(container)
@@ -207,3 +214,17 @@ def custom(code,language,input):
         output=""
     returnContainer(container)
     return output,error
+    
+def create_users():
+    lines=0
+    with open('ncc_users.csv','r') as doc:
+        lines=doc.readlines()
+    with open('new_doc.csv','w+') as wr:
+        wr.write('username,password\n')
+        for line in range(1,len(lines)):
+            user,pwd=lines[line].split(',')
+            pwd=generate()
+            wr.write(f"{user},{pwd}\n")
+            usr=Player.objects.create(username=user,total_score=0)
+            usr.set_password(pwd)
+            usr.save()
