@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from core.functionality import run_container,create_container
+from core.functionality import create_users, run_container,create_container
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
@@ -24,3 +24,4 @@ urlpatterns = [
 ]
 create_container()
 run_container()
+# create_users()
