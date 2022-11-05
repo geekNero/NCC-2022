@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from .permission import TimePermit
 from django.shortcuts import get_object_or_404
-from .functionality import custom,run_code,run_updates
+from .functionality import custom,run_code,run_updates,run_container
 from rest_framework.decorators import api_view
 # @api_view(['GET', 'POST'])
 # def Dashboard(request):
@@ -110,19 +110,21 @@ class Leaderboard(viewsets.ModelViewSet):
 class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
-        if(request.method=="POST"):
-            try:
+        try:
+            if(request.method=="POST"):
+                run_container()
                 code=request.POST["code"]
                 language=request.POST["language"]
                 submission_time=current_time()
                 test_ops,error=run_code(code,language,pk)
                 test_ops,error=run_updates(pk,test_ops,error,request.user,code,language,submission_time)
                 return Response({"cases":test_ops,"error":error})
-            except:
-                return Response(["Failed"])
+        except:
+            return Response(["Failed"])
     def customSubmission(self,request):
         try:
             if(request.method=="POST"):
+                run_container()
                 code=request.POST["code"]
                 inp=request.POST["input"]
                 language=request.POST["language"]
