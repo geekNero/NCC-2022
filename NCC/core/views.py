@@ -110,7 +110,7 @@ class Leaderboard(viewsets.ModelViewSet):
 class Submit(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,TimePermit)
     def submission(self,request,pk):
-        try:
+        # try:
             if(request.method=="POST"):
                 run_container()
                 code=request.POST["code"]
@@ -119,7 +119,7 @@ class Submit(viewsets.ModelViewSet):
                 test_ops,error=run_code(code,language,pk)
                 test_ops,error=run_updates(pk,test_ops,error,request.user,code,language,submission_time)
                 return Response({"cases":test_ops,"error":error})
-        except:
+        # except:
             return Response(["Failed"])
     def customSubmission(self,request):
         try:

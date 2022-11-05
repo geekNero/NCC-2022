@@ -1,6 +1,6 @@
 i=1
 cd containers
-sudo docker ps > process.txt
+docker ps > process.txt
 while [ $i != 11 ]
 do
     # if ! grep -w "NCC-Container-$i" process.txt
@@ -10,9 +10,9 @@ do
     #     cd ..
     # fi
     cd NCC-Container-$i
-    sudo docker start NCC-Container-$i
+    docker start NCC-Container-$i
     cd ..
     i=`expr $i + 1`
 done
 
-sudo rm process.txt
+rm process.txt

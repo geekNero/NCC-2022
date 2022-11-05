@@ -122,13 +122,12 @@ def run_code(code,language,qid):
                 test_ops.append('Passed')
             else:
                 test_ops.append('WA')
-    empty_folder(container)
     returnContainer(container)
     return test_ops,error
 
 
 def execute(container):
-    command=f"sudo docker exec {container.name} python3 src/sub.py"
+    command=f"docker exec {container.name} python3 src/sub.py"
     a=subprocess.run(command,shell=True,text=True)
 
 def run_container():
@@ -199,8 +198,6 @@ def run_updates(pk,test_ops,error,user,code,language,submission_time):
     user.save()
     return test_ops,error
 
-def empty_folder(container):
-    subprocess.run(f'sudo rm containers/{container.name}/*',shell=True)
 
 def custom(code,language,input):
     container=find_container()
